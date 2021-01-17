@@ -51,16 +51,13 @@ blacks = []
 # Ping
 
 
-@app.on_message(
-    filters.command(["ping"]) & filters.chat(sudo_chat_id) & ~filters.edited
-)
-async def ping(_, message):
-    global blacks
-    if message.from_user.id in blacks:
-        await message.reply_text("You're Blacklisted, So Stop Spamming.")
+@asst.on(events.NewMessage(pattern="^:ping"))
+async def ping(message):
+    if message.sender.id in blacks:
+        await message.reply("You're Blacklisted, So Stop Spamming.")
         return
     start_time = int(round(time.time() * 1000))
-    m = await message.reply_text(".")
+    m = await message.reply(".")
     end_time = int(round(time.time() * 1000))
     await m.edit(f"{end_time - start_time} ms")
 
@@ -68,13 +65,12 @@ async def ping(_, message):
 # Start
 
 
-@app.on_message(filters.command(["start"]) & ~filters.edited)
-async def start(_, message: Message):
-    global blacks
-    if message.from_user.id in blacks:
-        await message.reply_text("You're Blacklisted, So Stop Spamming.")
+@asst.on(events.NewMessage(pattern="^:start"))
+async def start(message):
+    if message.sender.id in blacks:
+        await message.reply("You're Blacklisted, So Stop Spamming.")
         return
-    await message.reply_text(
+    await message.reply(
         "Hi I'm Telegram Voice Chat Bot. Join @TheHamkerChat For Support."
     )
 
@@ -82,15 +78,12 @@ async def start(_, message: Message):
 # Help
 
 
-@app.on_message(
-    filters.command(["help"]) & filters.chat(sudo_chat_id) & ~filters.edited
-)
-async def help(_, message: Message):
-    global blacks
-    if message.from_user.id in blacks:
-        await message.reply_text("You're Blacklisted, So Stop Spamming.")
+@asst.on(events.NewMessage(pattern="^:help"]))
+async def help(message):
+    if message.sender.id in blacks:
+        await message.reply("You're Blacklisted, So Stop Spamming.")
         return
-    await message.reply_text(
+    await message.reply(
         """Currently These Commands Are Supported.
 /start To Start The bot.
 /help To Show This Message.
@@ -115,20 +108,13 @@ s = None
 m = None
 
 
-@app.on_message(
-    filters.command(["jiosaavn"])
-    & filters.chat(sudo_chat_id)
-    & ~filters.edited
-)
-async def jiosaavn(_, message: Message):
-    global blacks
-    if message.from_user.id in blacks:
-        await message.reply_text("You're Blacklisted, So Stop Spamming.")
+@asst.on(events.NewMessage(pattern="^:jiosaavn"))
+async def jiosaavn(message):
+    if message.sender.id in blacks:
+        await message.reply("You're Blacklisted, So Stop Spamming.")
         return
-    global s
-    global m
-    if len(message.command) < 2:
-        await message.reply_text("/jiosaavn requires an argument")
+    if len(message.text.split(' ', maxsplit=1)) < 2:
+        await message.reply(":jiosaavn requires an argument")
         return
     try:
         os.system("killall -9 mpv")
@@ -145,7 +131,7 @@ async def jiosaavn(_, message: Message):
 
     query = kwairi(message)
 
-    m = await message.reply_text(f"Searching for `{query}` on JioSaavn")
+    m = await message.reply(f"Searching for `{query}` on JioSaavn")
     async with aiohttp.ClientSession() as session:
         async with session.get(
             f"https://jiosaavnapi.bhadoo.uk/result/?query={query}"
@@ -206,9 +192,9 @@ async def jiosaavn(_, message: Message):
     os.system("rm temp.png")
     os.system("rm background.png")
     await m.delete()
-    m = await message.reply_photo(
+    m = await message.reply(
         caption=f"Playing `{sname}` Via Jiosaavn #music",
-        photo="final.png",
+        file="final.png",
         reply_markup=InlineKeyboardMarkup(
             [
                 [
